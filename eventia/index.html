@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EVENTIA · Aplicación Web Interactiva (UMC)</title>
+  <style>
+    :root {
+      --navy: #15294B;
+      --blue: #1D4ED8;
+      --blue-hover: #1E40AF;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --border: #CBD5E1;
+      --text: #1E293B;
+      --muted: #64748B;
+      --green-bg: #DCFCE7;
+      --green-text: #166534;
+      --amber-bg: #FEF3C7;
+      --amber-text: #92400E;
+      --red-bg: #FEE2E2;
+      --red-text: #991B1B;
+      --sky-bg: #E0F2FE;
+      --sky-text: #075985;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.45; }
+
+    /* Barra Superior */
+    header {
+      background-color: var(--navy);
+      color: #fff;
+      padding: 12px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-badge {
+      background: rgba(59, 130, 246, 0.25);
+      border: 1px solid rgba(147, 197, 253, 0.5);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 14px;
+    }
+    .brand-sub { font-size: 12px; color: #CBD5E1; }
+
+    nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .nav-btn {
+      background: rgba(30, 41, 59, 0.8);
+      color: #E2E8F0;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .nav-btn:hover { background: #334155; }
+    .nav-btn.active { background: #2563EB; color: #fff; border-color: #60A5FA; }
+
+    .role-pill {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid #334155;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    /* Contenedor Principal */
+    main { max-width: 1120px; margin: 24px auto; padding: 0 20px 40px; }
+
+    /* Alerta Global */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid;
+    }
+    .alert.exito { background: var(--green-bg); border-color: #86EFAC; color: var(--green-text); }
+    .alert.error { background: var(--red-bg); border-color: #FCA5A5; color: var(--red-text); }
+    .alert.advertencia { background: var(--amber-bg); border-color: #FCD34D; color: var(--amber-text); }
+    .alert.info { background: var(--sky-bg); border-color: #7DD3FC; color: var(--sky-text); }
+    .alert button { background: none; border: none; text-decoration: underline; cursor: pointer; font-size: 12px; color: inherit; }
+
+    /* Encabezados de sección */
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .section-head h1 { font-size: 20px; color: #0F172A; }
+    .section-head p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .privacy-tag {
+      font-size: 11px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+    }
+
+    /* Tarjetas y controles */
+    .card {
+      background: var(--card);
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 768px) { .filters-grid { grid-template-columns: 1fr; } }
+
+    input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text);
+      background: #fff;
+    }
+    input:focus, select:focus, textarea:focus { outline: 2px solid #93C5FD; border-color: #3B82F6; }
+
+    /* Lista de eventos */
+    .event-list { display: flex; flex-direction: column; gap: 12px; }
+    .event-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .event-info { flex: 1 1 540px; }
+    .event-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .event-title { font-size: 16px; font-weight: 700; color: #0F172A; }
+    .tag-type {
+      font-size: 11px;
+      background: #F1F5F9;
+      color: #334155;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .event-desc { font-size: 13px; color: #475569; margin-bottom: 8px; }
+    .event-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: #475569; }
+
+    .event-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 220px;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green-text); }
+    .badge-sky { background: var(--sky-bg); color: var(--sky-text); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-red { background: var(--red-bg); color: var(--red-text); }
+
+    .cupo-ok { font-size: 12px; font-weight: 700; color: #15803D; }
+    .cupo-full { font-size: 12px; font-weight: 700; color: #B91C1C; }
+
+    /* Botones */
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: 0.15s;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-hover); }
+    .btn-outline { background: #fff; border-color: #94A3B8; color: #1E293B; }
+    .btn-outline:hover { background: #F1F5F9; }
+    .btn-danger-outline { background: #fff; border-color: #FDA4AF; color: #BE123C; }
+    .btn-danger-outline:hover { background: #FFF1F2; }
+    .btn-danger { background: #E11D48; color: #fff; }
+    .btn-danger:hover { background: #BE123C; }
+    .btn-success { background: #059669; color: #fff; }
+    .btn-success:hover { background: #047857; }
+    .btn:disabled { background: #E2E8F0; color: #94A3B8; border-color: #E2E8F0; cursor: not-allowed; }
+
+    /* Tabla */
+    .table-wrap { overflow-x: auto; background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { background: #F1F5F9; padding: 11px 14px; font-size: 12px; color: #334155; border-bottom: 1px solid #E2E8F0; }
+    td { padding: 12px 14px; border-bottom: 1px solid #E2E8F0; font-size: 12px; }
+    tr:last-child td { border-bottom: none; }
+
+    /* Formularios */
+    .form-grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-grid-4 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    @media (max-width: 768px) { .form-grid-3, .form-grid-4, .form-grid-2 { grid-template-columns: 1fr; } }
+
+    label.field-label { display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+    .radio-group { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; margin-bottom: 14px; }
+    .radio-group label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+    .field-error { color: #BE123C; font-size: 12px; font-weight: 600; margin-top: 4px; }
+    .input-error { border-color: #F43F5E !important; background-color: #FFF1F2 !important; }
+
+    /* Bandeja Revisión (P-04) */
+    .review-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; }
+    @media (max-width: 820px) { .review-layout { grid-template-columns: 1fr; } }
+
+    .sol-item {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .sol-item.selected { background: #EFF6FF; border-color: #3B82F6; box-shadow: 0 1px 4px rgba(59,130,246,0.15); }
+    .detail-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+    .conflict-banner {
+      background: var(--amber-bg);
+      border: 1px solid #F59E0B;
+      color: #78350F;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-badge">EVENTIA</span>
+        <span class="brand-sub">Universidad Metropolitana del Centro · Prototipo Web Interactivo (RUP)</span>
+      </div>
+      <nav>
+        <button class="nav-btn active" id="btn-P01" onclick="cambiarVista('P01', 'Participante')">P-01 Catálogo</button>
+        <button class="nav-btn" id="btn-P02" onclick="cambiarVista('P02', 'Participante')">P-02 Mis Registros (<span id="count-reg">1</span>)</button>
+        <button class="nav-btn" id="btn-P03" onclick="cambiarVista('P03', 'Organizador')">P-03 Solicitar Evento</button>
+        <button class="nav-btn" id="btn-P04" onclick="cambiarVista('P04', 'Coordinación')">P-04 Bandeja Revisión</button>
+      </nav>
+      <div class="role-pill">Rol activo: <strong id="rol-activo">Participante</strong></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="alerta-global" class="alert hidden">
+      <span id="alerta-texto"></span>
+      <button onclick="cerrarAlerta()">Cerrar</button>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- PANTALLA P-01: CATÁLOGO DE EVENTOS PUBLICADOS             -->
+    <!-- ========================================================= -->
+    <section id="vista-P01">
+      <div class="section-head">
+        <div>
+          <h1>Catálogo de eventos publicados</h1>
+          <p>Consulta disponibilidad en tiempo real y gestiona tu participación (IU-01 · RF-006 / RF-014)</p>
+        </div>
+        <span class="privacy-tag">Vista pública: solo datos del evento, nunca datos personales de inscritos (RN-017)</span>
+      </div>
+
+      <div class="card filters-grid">
+        <input type="text" id="filtro-texto" placeholder="Buscar por título o unidad organizadora..." oninput="renderizarCatalogo()" />
+        <select id="filtro-tipo" onchange="renderizarCatalogo()">
+          <option value="Todos">Tipo: Todos</option>
+          <option value="Taller">Taller</option>
+          <option value="Feria">Feria</option>
+          <option value="Conferencia">Conferencia</option>
+        </select>
+        <select id="filtro-acceso" onchange="renderizarCatalogo()">
+          <option value="Todos">Acceso: Todos</option>
+          <option value="Abierto">Abierto</option>
+          <option value="Comunidad">Comunidad universitaria</option>
+          <option value="Perfil">Perfil específico</option>
+        </select>
+      </div>
+
+      <div id="lista-eventos" class="event-list"></div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- PANTALLA P-02: MIS REGISTROS                              -->
+    <!-- ========================================================= -->
+    <section id="vista-P02" class="hidden">
+      <div class="section-head">
+        <div>
+          <h1>Mis registros</h1>
+          <p>Consulta el estado vigente de tus inscripciones y gestiona cancelaciones (IU-03 · CU-04 / CU-05)</p>
+        </div>
+      </div>
+
+      <div class="alert info" style="margin-bottom: 14px;">
+        <span>Tu estado aquí es el vigente aunque el correo de aviso (INT-02) tarde en llegar (FAL-02).</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Evento</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th style="text-align:right;">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-registros"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- PANTALLA P-03: SOLICITAR EVENTO                           -->
+    <!-- ========================================================= -->
+    <section id="vista-P03" class="hidden">
+      <div class="section-head">
+        <div>
+          <h1>Solicitar evento y espacio</h1>
+          <p>Registra una propuesta formal para revisión de Coordinación (IU-04 · CU-06 · RN-007)</p>
+        </div>
+      </div>
+
+      <form class="card" onsubmit="enviarSolicitud(event)">
+        <div class="form-grid-3">
+          <div>
+            <label class="field-label">Título del evento *</label>
+            <input type="text" id="sol-titulo" placeholder="Ej. Taller de arquitectura limpia" />
+          </div>
+          <div>
+            <label class="field-label">Tipo de evento *</label>
+            <select id="sol-tipo">
+              <option value="Taller">Taller</option>
+              <option value="Conferencia">Conferencia</option>
+              <option value="Seminario">Seminario</option>
+              <option value="Feria">Feria</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="field-label">Descripción y objetivos *</label>
+          <textarea id="sol-desc" rows="2" placeholder="Describe el propósito académico, público objetivo y requerimientos..."></textarea>
+        </div>
+
+        <label class="field-label">Modalidad de acceso *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="sol-mod" value="Abierto" checked /> Abierto</label>
+          <label><input type="radio" name="sol-mod" value="Comunidad universitaria" /> Comunidad universitaria</label>
+          <label><input type="radio" name="sol-mod" value="Perfil específico" /> Perfil específico</label>
+        </div>
+
+        <div class="form-grid-4">
+          <div>
+            <label class="field-label">Espacio solicitado *</label>
+            <select id="sol-espacio" onchange="validarFormularioSolicitud()"></select>
+          </div>
+          <div>
+            <label class="field-label">Fecha *</label>
+            <input type="date" id="sol-fecha" value="2026-11-25" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <label class="field-label">Inicio *</label>
+              <input type="time" id="sol-inicio" value="10:00" onchange="validarFormularioSolicitud()" />
+            </div>
+            <div>
+              <label class="field-label">Fin *</label>
+              <input type="time" id="sol-fin" value="12:00" onchange="validarFormularioSolicitud()" />
+            </div>
+          </div>
+        </div>
+        <div id="err-horario" class="field-error hidden" style="margin-bottom:12px;">
+          La hora de finalización debe ser posterior a la hora de inicio (RD-05).
+        </div>
+
+        <div class="form-grid-2">
+          <div>
+            <label class="field-label">Cupo solicitado *</label>
+            <input type="number" id="sol-cupo" min="1" value="40" oninput="validarFormularioSolicitud()" />
+            <div id="err-cupo" class="field-error hidden"></div>
+          </div>
+          <div>
+            <label class="field-label">Unidad organizadora responsable</label>
+            <input type="text" id="sol-unidad" value="Facultad de Ciencias de la Computación" />
+          </div>
+        </div>
+
+        <div style="text-align:right; margin-top:10px;">
+          <button type="submit" class="btn btn-primary">+ Enviar solicitud a Coordinación</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- PANTALLA P-04: BANDEJA DE REVISIÓN (COORDINACIÓN)         -->
+    <!-- ========================================================= -->
+    <section id="vista-P04" class="hidden">
+      <div class="section-head">
+        <div>
+          <h1>Bandeja de revisión · Coordinación</h1>
+          <p>Evalúa solicitudes pendientes, detecta traslapes y autoriza espacios (IU-06 · CU-10 / CU-11)</p>
+        </div>
+      </div>
+
+      <div class="review-layout">
+        <div>
+          <p style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:8px;">Solicitudes pendientes</p>
+          <div id="lista-solicitudes"></div>
+        </div>
+
+        <div class="card" id="detalle-solicitud"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- DATOS SIMULADOS (Trazables al SRS v1.0 de EVENTIA) ---
+    const ESPACIOS = [
+      { id: 'ESP-01', nombre: 'Sala B-204', capacidad: 40 },
+      { id: 'ESP-02', nombre: 'Auditorio Central', capacidad: 200 },
+      { id: 'ESP-03', nombre: 'Auditorio Norte', capacidad: 120 },
+      { id: 'ESP-04', nombre: 'Sala C-101', capacidad: 35 }
+    ];
+
+    let eventos = [
+      {
+        id: 'EVT-101',
+        titulo: 'Taller de análisis de datos',
+        descripcion: 'Sesión práctica de análisis exploratorio de datos y visualización académica.',
+        tipo: 'Taller',
+        fecha: '14/10/2026',
+        horaInicio: '10:00',
+        horaFin: '12:00',
+        espacio: 'Sala B-204',
+        unidad: 'Facultad de Ciencias de la Computación',
+        modalidad: 'Abierto',
+        cupoAutorizado: 40,
+        inscritosConfirmados: 28,
+        listaEsperaCount: 0
+      },
+      {
+        id: 'EVT-102',
+        titulo: 'Feria de proyectos',
+        descripcion: 'Exposición semestral de prototipos tecnológicos y vinculación universitaria.',
+        tipo: 'Feria',
+        fecha: '21/10/2026',
+        horaInicio: '10:00',
+        horaFin: '13:00',
+        espacio: 'Auditorio Central',
+        unidad: 'Coordinación de Extensión',
+        modalidad: 'Comunidad universitaria',
+        cupoAutorizado: 200,
+        inscritosConfirmados: 200,
+        listaEsperaCount: 2
+      },
+      {
+        id: 'EVT-103',
+        titulo: 'Conferencia de innovación',
+        descripcion: 'Tendencias en arquitectura de software y transformación digital institucional.',
+        tipo: 'Conferencia',
+        fecha: '28/10/2026',
+        horaInicio: '16:00',
+        horaFin: '18:00',
+        espacio: 'Auditorio Norte',
+        unidad: 'Grupo estudiantil de Emprendimiento',
+        modalidad: 'Perfil específico: docentes',
+        cupoAutorizado: 120,
+        inscritosConfirmados: 35,
+        listaEsperaCount: 0
+      }
+    ];
+
+    let misRegistros = [
+      {
+        id: 'REG-901',
+        eventoId: 'EVT-103',
+        titulo: 'Seminario de inteligencia artificial',
+        fecha: '02/10/2026',
+        estado: 'Cancelado por evento',
+        posicionEspera: null
+      }
+    ];
+
+    let solicitudes = [
+      {
+        id: 'SOL-2026-041',
+        titulo: 'Taller de análisis de datos (Grupo B)',
+        tipo: 'Taller',
+        organizador: 'A. Torres',
+        unidad: 'Facultad de Ciencias de la Computación',
+        espacio: 'Sala B-204',
+        capacidadEspacio: 40,
+        fecha: '14/10/2026',
+        horaInicio: '11:00',
+        horaFin: '13:00',
+        cupoSolicitado: 40,
+        estado: 'En revisión',
+        tieneConflicto: true,
+        detalleConflicto: 'Traslape con «Taller de análisis de datos» (reserva confirmada, Sala B-204, 10:00–12:00). Resuelve el conflicto antes de aprobar.'
+      },
+      {
+        id: 'SOL-2026-042',
+        titulo: 'Concurso de carteles científicos',
+        tipo: 'Concurso',
+        organizador: 'M. Díaz',
+        unidad: 'Facultad de Ingeniería',
+        espacio: 'Auditorio Norte',
+        capacidadEspacio: 120,
+        fecha: '15/10/2026',
+        horaInicio: '09:00',
+        horaFin: '13:00',
+        cupoSolicitado: 90,
+        estado: 'Enviada',
+        tieneConflicto: false,
+        detalleConflicto: ''
+      }
+    ];
+
+    let solicitudActivaId = 'SOL-2026-041';
+
+    // --- NAVEGACIÓN ---
+    function cambiarVista(vista, rol) {
+      ['P01', 'P02', 'P03', 'P04'].forEach(v => {
+        document.getElementById('vista-' + v).classList.toggle('hidden', v !== vista);
+        document.getElementById('btn-' + v).classList.toggle('active', v === vista);
+      });
+      document.getElementById('rol-activo').textContent = rol;
+      if (vista === 'P01') renderizarCatalogo();
+      if (vista === 'P02') renderizarRegistros();
+      if (vista === 'P03') validarFormularioSolicitud();
+      if (vista === 'P04') renderizarBandeja();
+    }
+
+    function mostrarAlerta(tipo, mensaje) {
+      const box = document.getElementById('alerta-global');
+      box.className = 'alert ' + tipo;
+      document.getElementById('alerta-texto').textContent = mensaje;
+    }
+
+    function cerrarAlerta() {
+      document.getElementById('alerta-global').classList.add('hidden');
+    }
+
+    // --- P-01: CATÁLOGO E INSCRIPCIÓN ---
+    function renderizarCatalogo() {
+      const txt = document.getElementById('filtro-texto').value.toLowerCase();
+      const tipo = document.getElementById('filtro-tipo').value;
+      const acc = document.getElementById('filtro-acceso').value;
+      const contenedor = document.getElementById('lista-eventos');
+
+      const filtrados = eventos.filter(ev => {
+        const mTxt = ev.titulo.toLowerCase().includes(txt) || ev.unidad.toLowerCase().includes(txt);
+        const mTipo = tipo === 'Todos' || ev.tipo === tipo;
+        const mAcc = acc === 'Todos' || ev.modalidad.includes(acc);
+        return mTxt && mTipo && mAcc;
+      });
+
+      if (filtrados.length === 0) {
+        contenedor.innerHTML = `
+          <div class="card" style="text-align:center; padding:32px;">
+            <p style="font-weight:600; margin-bottom:8px;">No se encontraron eventos con los filtros seleccionados.</p>
+            <button class="btn btn-outline" onclick="limpiarFiltros()">Limpiar filtros</button>
+          </div>`;
+        return;
+      }
+
+      contenedor.innerHTML = filtrados.map(ev => {
+        const disp = ev.cupoAutorizado - ev.inscritosConfirmados;
+        const lleno = disp <= 0;
+        const regActivo = misRegistros.find(r => r.eventoId === ev.id && (r.estado === 'Confirmado' || r.estado === 'En lista de espera'));
+
+        let badgeClass = 'badge-green';
+        if (ev.modalidad.includes('Comunidad')) badgeClass = 'badge-sky';
+        if (ev.modalidad.includes('Perfil')) badgeClass = 'badge-amber';
+
+        const cupoHtml = lleno
+          ? `<span class="cupo-full">Cupo lleno (${ev.listaEsperaCount} en espera)</span>`
+          : `<span class="cupo-ok">Cupo disponible: ${disp} de ${ev.cupoAutorizado}</span>`;
+
+        const botonHtml = regActivo
+          ? `<button class="btn btn-outline" onclick="cambiarVista('P02', 'Participante')">${regActivo.estado} →</button>`
+          : `<button class="btn ${lleno ? 'btn-outline' : 'btn-primary'}" onclick="inscribirse('${ev.id}')">${lleno ? 'Unirme a lista de espera' : 'Registrarme'}</button>`;
+
+        return `
+          <div class="event-card">
+            <div class="event-info">
+              <div class="event-title-row">
+                <span class="event-title">${ev.titulo}</span>
+                <span class="tag-type">${ev.tipo}</span>
+              </div>
+              <p class="event-desc">${ev.descripcion}</p>
+              <div class="event-meta">
+                <span>📅 ${ev.fecha} · ${ev.horaInicio}–${ev.horaFin}</span>
+                <span>📍 ${ev.espacio}</span>
+                <span>🏛️ ${ev.unidad}</span>
+              </div>
+            </div>
+            <div class="event-actions">
+              <span class="badge ${badgeClass}">${ev.modalidad}</span>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                ${cupoHtml}
+                ${botonHtml}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('filtro-texto').value = '';
+      document.getElementById('filtro-tipo').value = 'Todos';
+      document.getElementById('filtro-acceso').value = 'Todos';
+      renderizarCatalogo();
+    }
+
+    function inscribirse(eventoId) {
+      const ev = eventos.find(e => e.id === eventoId);
+      const duplicado = misRegistros.find(r => r.eventoId === eventoId && (r.estado === 'Confirmado' || r.estado === 'En lista de espera'));
+      if (duplicado) {
+        mostrarAlerta('error', `Ya tienes un registro activo en «${ev.titulo}» (${duplicado.estado}). No puedes registrarte dos veces (RN-009).`);
+        return;
+      }
+
+      const disp = ev.cupoAutorizado - ev.inscritosConfirmados;
+      const folio = 'REG-' + Math.floor(100 + Math.random() * 900);
+
+      if (disp > 0) {
+        ev.inscritosConfirmados++;
+        misRegistros.unshift({ id: folio, eventoId: ev.id, titulo: ev.titulo, fecha: ev.fecha, estado: 'Confirmado', posicionEspera: null });
+        mostrarAlerta('exito', `Inscripción confirmada en «${ev.titulo}» (Folio ${folio}). Comprobante generado (RF-019).`);
+      } else {
+        ev.listaEsperaCount++;
+        misRegistros.unshift({ id: folio, eventoId: ev.id, titulo: ev.titulo, fecha: ev.fecha, estado: 'En lista de espera', posicionEspera: ev.listaEsperaCount });
+        mostrarAlerta('advertencia', `Cupo lleno. Te has unido a la lista de espera en la posición #${ev.listaEsperaCount} (RN-010).`);
+      }
+      document.getElementById('count-reg').textContent = misRegistros.length;
+      renderizarCatalogo();
+    }
+
+    // --- P-02: MIS REGISTROS ---
+    function renderizarRegistros() {
+      const tbody = document.getElementById('tabla-registros');
+      tbody.innerHTML = misRegistros.map(reg => {
+        let badge = 'badge-red';
+        let textoEstado = reg.estado;
+        if (reg.estado === 'Confirmado') badge = 'badge-green';
+        if (reg.estado === 'En lista de espera') {
+          badge = 'badge-amber';
+          textoEstado = `En lista de espera - posición ${reg.posicionEspera}`;
+        }
+        const activo = reg.estado === 'Confirmado' || reg.estado === 'En lista de espera';
+        return `
+          <tr>
+            <td style="font-family:monospace; color:#64748B;">${reg.id}</td>
+            <td style="font-weight:600;">${reg.titulo}</td>
+            <td>${reg.fecha}</td>
+            <td><span class="badge ${badge}">${textoEstado}</span></td>
+            <td style="text-align:right;">
+              ${activo ? `<button class="btn btn-danger-outline" onclick="cancelarRegistro('${reg.id}')">Cancelar registro</button>` : '—'}
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function cancelarRegistro(regId) {
+      const reg = misRegistros.find(r => r.id === regId);
+      if (!confirm(`¿Confirmas cancelar tu registro ${reg.id} en «${reg.titulo}»?`)) return;
+
+      const eraConfirmado = reg.estado === 'Confirmado';
+      reg.estado = 'Cancelado por participante';
+
+      if (eraConfirmado) {
+        const ev = eventos.find(e => e.id === reg.eventoId);
+        if (ev && ev.inscritosConfirmados > 0) ev.inscritosConfirmados--;
+        mostrarAlerta('info', `Registro cancelado en «${reg.titulo}». El lugar ha sido liberado de inmediato (RN-011).`);
+      } else {
+        mostrarAlerta('info', `Has salido de la lista de espera para «${reg.titulo}».`);
+      }
+      renderizarRegistros();
+    }
+
+    // --- P-03: SOLICITAR EVENTO ---
+    function inicializarSelectEspacios() {
+      const sel = document.getElementById('sol-espacio');
+      sel.innerHTML = ESPACIOS.map(e => `<option value="${e.id}">${e.nombre} (capacidad máx. ${e.capacidad})</option>`).join('');
+    }
+
+    function validarFormularioSolicitud() {
+      const espId = document.getElementById('sol-espacio').value;
+      const esp = ESPACIOS.find(e => e.id === espId) || ESPACIOS[0];
+      const cupoInput = document.getElementById('sol-cupo');
+      const cupo = Number(cupoInput.value);
+      const inicio = document.getElementById('sol-inicio').value;
+      const fin = document.getElementById('sol-fin').value;
+
+      const errHorario = document.getElementById('err-horario');
+      const errCupo = document.getElementById('err-cupo');
+
+      const horarioMal = fin <= inicio;
+      errHorario.classList.toggle('hidden', !horarioMal);
+
+      if (cupo > esp.capacidad) {
+        cupoInput.classList.add('input-error');
+        errCupo.textContent = `El cupo (${cupo}) excede la capacidad máxima de ${esp.nombre} (${esp.capacidad}) (RN-007).`;
+        errCupo.classList.remove('hidden');
+        return false;
+      } else {
+        cupoInput.classList.remove('input-error');
+        errCupo.classList.add('hidden');
+      }
+      return !horarioMal && cupo >= 1;
+    }
+
+    function enviarSolicitud(e) {
+      e.preventDefault();
+      const titulo = document.getElementById('sol-titulo').value.trim();
+      const desc = document.getElementById('sol-desc').value.trim();
+      if (!titulo || !desc) {
+        mostrarAlerta('error', 'Completa todos los campos obligatorios marcados con * (E1).');
+        return;
+      }
+      if (!validarFormularioSolicitud()) {
+        mostrarAlerta('error', 'Corrige los errores de validación de cupo u horario antes de enviar.');
+        return;
+      }
+
+      const esp = ESPACIOS.find(x => x.id === document.getElementById('sol-espacio').value);
+      const folio = 'SOL-2026-0' + (solicitudes.length + 41);
+      const fechaRaw = document.getElementById('sol-fecha').value.split('-').reverse().join('/');
+
+      solicitudes.unshift({
+        id: folio,
+        titulo: titulo,
+        tipo: document.getElementById('sol-tipo').value,
+        organizador: 'A. Ramírez (Tú)',
+        unidad: document.getElementById('sol-unidad').value,
+        espacio: esp.nombre,
+        capacidadEspacio: esp.capacidad,
+        fecha: fechaRaw,
+        horaInicio: document.getElementById('sol-inicio').value,
+        horaFin: document.getElementById('sol-fin').value,
+        cupoSolicitado: Number(document.getElementById('sol-cupo').value),
+        estado: 'Enviada',
+        tieneConflicto: false,
+        detalleConflicto: ''
+      });
+
+      solicitudActivaId = folio;
+      document.getElementById('sol-titulo').value = '';
+      document.getElementById('sol-desc').value = '';
+      mostrarAlerta('exito', `Solicitud registrada con folio ${folio} en estado «Enviada». Ya puedes revisarla en P-04.`);
+    }
+
+    // --- P-04: BANDEJA COORDINACIÓN ---
+    function renderizarBandeja() {
+      const lista = document.getElementById('lista-solicitudes');
+      lista.innerHTML = solicitudes.map(s => `
+        <button class="sol-item ${s.id === solicitudActivaId ? 'selected' : ''}" onclick="seleccionarSolicitud('${s.id}')">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:monospace; font-size:11px; color:#64748B;">${s.id}</span>
+            ${s.tieneConflicto ? '<span class="badge badge-amber">⚠ Conflicto</span>' : ''}
+          </div>
+          <div style="font-weight:700; font-size:13px; margin:4px 0;">${s.titulo}</div>
+          <div style="font-size:11px; color:#475569;">${s.espacio} · ${s.fecha}</div>
+          <div style="margin-top:6px;"><span class="tag-type">Estado: ${s.estado}</span></div>
+        </button>
+      `).join('');
+
+      const sol = solicitudes.find(s => s.id === solicitudActivaId) || solicitudes[0];
+      const detalle = document.getElementById('detalle-solicitud');
+
+      detalle.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #E2E8F0; padding-bottom:12px;">
+          <div>
+            <span style="font-family:monospace; font-size:12px; color:#64748B;">${sol.id}</span>
+            <h2 style="font-size:17px; margin:2px 0;">${sol.titulo}</h2>
+            <p style="font-size:12px; color:#475569;">Organizador: <strong>${sol.organizador}</strong> · ${sol.unidad}</p>
+          </div>
+          <span class="badge badge-amber">${sol.estado}</span>
+        </div>
+
+        <div class="detail-box">
+          <div><span style="color:#64748B; display:block;">Espacio</span><strong>${sol.espacio} (cap. ${sol.capacidadEspacio})</strong></div>
+          <div><span style="color:#64748B; display:block;">Fecha y horario</span><strong>${sol.fecha} · ${sol.horaInicio}–${sol.horaFin}</strong></div>
+          <div><span style="color:#64748B; display:block;">Cupo solicitado</span><strong>${sol.cupoSolicitado} personas</strong></div>
+        </div>
+
+        ${sol.tieneConflicto ? `
+          <div class="conflict-banner">
+            <strong>⚠ Advertencia de traslape detectada (RN-004)</strong><br/>
+            ${sol.detalleConflicto}
+          </div>` : ''}
+
+        <div style="margin-bottom:14px;">
+          <label class="field-label">Motivo / Observaciones (obligatorio al devolver o rechazar · RN-012)</label>
+          <textarea id="motivo-coord" rows="3" placeholder="Indica el motivo técnico o solicitud de ajuste de horario/espacio..."></textarea>
+          <div id="err-motivo" class="field-error hidden">El motivo es obligatorio al devolver o rechazar una solicitud (RN-012 / RD-07).</div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          <button class="btn btn-success" ${sol.tieneConflicto || sol.estado === 'Aprobada' ? 'disabled' : ''} onclick="dictaminar('Aprobada')">✓ Aprobar solicitud</button>
+          <button class="btn btn-outline" onclick="dictaminar('Devuelta')">Devolver con observaciones</button>
+          <button class="btn btn-danger" onclick="dictaminar('Rechazada')">Rechazar solicitud</button>
+        </div>
+
+        ${sol.tieneConflicto ? '<p style="font-size:11px; color:#64748B; font-style:italic; margin-top:10px;">* El botón «Aprobar» se habilita únicamente cuando no existe traslape ni bloqueo activo (RN-001 / RN-004).</p>' : ''}
+      `;
+    }
+
+    function seleccionarSolicitud(id) {
+      solicitudActivaId = id;
+      renderizarBandeja();
+    }
+
+    function dictaminar(accion) {
+      const sol = solicitudes.find(s => s.id === solicitudActivaId);
+      const motivo = document.getElementById('motivo-coord').value.trim();
+      const errMotivo = document.getElementById('err-motivo');
+
+      if ((accion === 'Devuelta' || accion === 'Rechazada') && !motivo) {
+        errMotivo.classList.remove('hidden');
+        return;
+      }
+      errMotivo.classList.add('hidden');
+      sol.estado = accion;
+      mostrarAlerta(accion === 'Aprobada' ? 'exito' : 'info', `Solicitud ${sol.id} marcada como «${accion}» y asentada en bitácora (RN-013).`);
+      renderizarBandeja();
+    }
+
+    // Inicialización al cargar
+    inicializarSelectEspacios();
+    renderizarCatalogo();
+  </script>
+</body>
+</html>
